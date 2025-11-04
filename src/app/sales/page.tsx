@@ -4,14 +4,6 @@ import React, { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
 
 type SalesRow = {
   date: string
@@ -79,8 +71,17 @@ export default function SalesPage() {
   const handleChange = (index: number, field: keyof SalesRow, value: string) => {
     setRows((prev) => {
       const newRows = [...prev]
-      const numVal = field === "date" ? value : parseFloat(value) || 0
+      
+      // Update the specific field
+      if (field === "date") {
+        newRows[index][field] = value
+      } else {
+        (newRows[index][field] as number) = parseFloat(value) || 0
+      }
+      
+      // Recalculate total
       newRows[index].total = newRows[index].net + newRows[index].tax - newRows[index].discount
+      
       return newRows
     })
   }
@@ -128,7 +129,7 @@ export default function SalesPage() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white p-8">
+    <div className="min-h-screen w-full bg-gray-50 p-8">
       <Card className="w-full shadow-md">
         <CardHeader>
           <CardTitle>Sales Data</CardTitle>
@@ -150,90 +151,90 @@ export default function SalesPage() {
 
           {/* Table */}
           <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Net</TableHead>
-                  <TableHead>Tax</TableHead>
-                  <TableHead>Discount</TableHead>
-                  <TableHead>Card</TableHead>
-                  <TableHead>Total</TableHead>
-                  <TableHead>Cash</TableHead>
-                  <TableHead>O/s</TableHead>
-                  <TableHead>Action</TableHead>
-                </TableRow>
-              </TableHeader>
+            <table className="w-full text-sm border-collapse">
+              <thead className="border-b bg-gray-100">
+                <tr>
+                  <th className="text-left p-2 font-medium">Date</th>
+                  <th className="text-left p-2 font-medium">Net</th>
+                  <th className="text-left p-2 font-medium">Tax</th>
+                  <th className="text-left p-2 font-medium">Discount</th>
+                  <th className="text-left p-2 font-medium">Card</th>
+                  <th className="text-left p-2 font-medium">Total</th>
+                  <th className="text-left p-2 font-medium">Cash</th>
+                  <th className="text-left p-2 font-medium">O/s</th>
+                  <th className="text-left p-2 font-medium">Action</th>
+                </tr>
+              </thead>
 
-              <TableBody>
+              <tbody>
                 {rows.map((row, i) => (
-                  <TableRow key={i}>
-                    <TableCell>
+                  <tr key={i} className="border-b hover:bg-gray-50">
+                    <td className="p-2">
                       <Input
                         type="date"
                         value={row.date}
                         onChange={(e) => handleChange(i, "date", e.target.value)}
                         disabled={row.confirmed}
                       />
-                    </TableCell>
-                    <TableCell>
+                    </td>
+                    <td className="p-2">
                       <Input
                         type="number"
                         value={row.net}
                         onChange={(e) => handleChange(i, "net", e.target.value)}
                         disabled={row.confirmed}
                       />
-                    </TableCell>
-                    <TableCell>
+                    </td>
+                    <td className="p-2">
                       <Input
                         type="number"
                         value={row.tax}
                         onChange={(e) => handleChange(i, "tax", e.target.value)}
                         disabled={row.confirmed}
                       />
-                    </TableCell>
-                    <TableCell>
+                    </td>
+                    <td className="p-2">
                       <Input
                         type="number"
                         value={row.discount}
                         onChange={(e) => handleChange(i, "discount", e.target.value)}
                         disabled={row.confirmed}
                       />
-                    </TableCell>
-                    <TableCell>
+                    </td>
+                    <td className="p-2">
                       <Input
                         type="number"
                         value={row.card}
                         onChange={(e) => handleChange(i, "card", e.target.value)}
                         disabled={row.confirmed}
                       />
-                    </TableCell>
-                    <TableCell>
+                    </td>
+                    <td className="p-2">
                       <Input
                         type="number"
                         value={row.total}
                         disabled
-                        className="bg-gray-100 dark:bg-gray-800"
+                        className="bg-gray-100"
                       />
-                    </TableCell>
-                    <TableCell>
+                    </td>
+                    <td className="p-2">
                       <Input
                         type="number"
                         value={row.cash}
                         onChange={(e) => handleChange(i, "cash", e.target.value)}
                         disabled={row.confirmed}
                       />
-                    </TableCell>
-                    <TableCell>
+                    </td>
+                    <td className="p-2">
                       <Input
                         type="number"
                         value={row.os}
                         onChange={(e) => handleChange(i, "os", e.target.value)}
                         disabled={row.confirmed}
                       />
-                    </TableCell>
+                    </td>
 
-                    <TableCell>
+                    <td className="p-2">
                       {!row.confirmed ? (
                         <Button size="sm" onClick={() => confirmRow(i)}>
                           Confirm
@@ -241,27 +242,27 @@ export default function SalesPage() {
                       ) : (
                         <span className="text-green-600 font-medium">✔ Done</span>
                       )}
-                    </TableCell>
-                  </TableRow>
+                    </td>
+                  </tr>
                 ))}
 
                 {/* Totals row */}
-                <TableRow className="font-bold bg-gray-100 dark:bg-gray-800">
-                  <TableCell>Total:</TableCell>
-                  <TableCell>₹{totals.net.toFixed(2)}</TableCell>
-                  <TableCell>₹{totals.tax.toFixed(2)}</TableCell>
-                  <TableCell>₹{totals.discount.toFixed(2)}</TableCell>
-                  <TableCell>₹{totals.card.toFixed(2)}</TableCell>
-                  <TableCell>₹{totals.total.toFixed(2)}</TableCell>
-                  <TableCell>₹{totals.cash.toFixed(2)}</TableCell>
-                  <TableCell>₹{totals.os.toFixed(2)}</TableCell>
-                  <TableCell></TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
+                <tr className="font-bold bg-gray-100">
+                  <td className="p-2">Total:</td>
+                  <td className="p-2">₹{totals.net.toFixed(2)}</td>
+                  <td className="p-2">₹{totals.tax.toFixed(2)}</td>
+                  <td className="p-2">₹{totals.discount.toFixed(2)}</td>
+                  <td className="p-2">₹{totals.card.toFixed(2)}</td>
+                  <td className="p-2">₹{totals.total.toFixed(2)}</td>
+                  <td className="p-2">₹{totals.cash.toFixed(2)}</td>
+                  <td className="p-2">₹{totals.os.toFixed(2)}</td>
+                  <td className="p-2"></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
 
-          <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">
+          <p className="mt-4 text-sm text-gray-500">
             Confirm entries to lock them and move them below. New shop entries appear at the top.
           </p>
         </CardContent>

@@ -7,7 +7,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
   ResponsiveContainer,
   BarChart,
@@ -20,15 +19,42 @@ import {
   Cell,
 } from "recharts";
 
+// Type definitions
+interface SalesData {
+  dept: string;
+  date: string;
+  selling: number;
+}
+
+interface MonthlySalesData {
+  name: string;
+  revenue: number;
+  [key: string]: string | number;
+}
+
+interface DepartmentData {
+  name: string;
+  value: number;
+  [key: string]: string | number;
+}
+
+interface MonthlySalesMap {
+  [key: string]: number;
+}
+
+interface DeptRevenueMap {
+  [key: string]: number;
+}
+
 export default function VrdhtechDashboard() {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<SalesData[]>([]);
 
   useEffect(() => {
-    const storedData = JSON.parse(localStorage.getItem("deptData") || "[]");
+    const storedData = JSON.parse(localStorage.getItem("deptData") || "[]") as SalesData[];
     setData(storedData);
   }, []);
 
-  const monthlySalesMap = data.reduce((acc, d) => {
+  const monthlySalesMap: MonthlySalesMap = data.reduce<MonthlySalesMap>((acc, d) => {
     const [y, m] = d.date.split("-");
     const key = `${y}-${m}`;
     acc[key] = (acc[key] || 0) + d.selling;
@@ -36,31 +62,25 @@ export default function VrdhtechDashboard() {
   }, {});
 
   const monthNames = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
   ];
+  
   const months = Object.keys(monthlySalesMap).sort();
-  const monthlySales = months.map((k) => {
+  const monthlySales: MonthlySalesData[] = months.map((k) => {
     const [y, m] = k.split("-");
-    return { name: `${monthNames[parseInt(m) - 1]} ${y}`, revenue: monthlySalesMap[k] };
+    return { 
+      name: `${monthNames[parseInt(m, 10) - 1]} ${y}`, 
+      revenue: monthlySalesMap[k] 
+    };
   });
 
-  const deptRevenueMap = data.reduce((acc, d) => {
+  const deptRevenueMap: DeptRevenueMap = data.reduce<DeptRevenueMap>((acc, d) => {
     acc[d.dept] = (acc[d.dept] || 0) + d.selling;
     return acc;
   }, {});
 
-  const departmentData = Object.keys(deptRevenueMap).map((name) => ({
+  const departmentData: DepartmentData[] = Object.keys(deptRevenueMap).map((name) => ({
     name,
     value: deptRevenueMap[name],
   }));
@@ -141,40 +161,42 @@ export default function VrdhtechDashboard() {
             <CardTitle>Recent Sales Data</CardTitle>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Department</TableHead>
-                  <TableHead>Month</TableHead>
-                  <TableHead>Revenue (₹)</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {data.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={3} className="text-center text-gray-500">
-                      No recent data
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  data
-                    .slice(-10)
-                    .reverse()
-                    .map((d, i) => {
-                      const [y, m] = d.date.split("-");
-                      return (
-                        <TableRow key={i}>
-                          <TableCell>{d.dept}</TableCell>
-                          <TableCell>
-                            {monthNames[parseInt(m) - 1]} {y}
-                          </TableCell>
-                          <TableCell>₹{d.selling}</TableCell>
-                        </TableRow>
-                      );
-                    })
-                )}
-              </TableBody>
-            </Table>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="border-b">
+                  <tr>
+                    <th className="text-left p-2 font-medium">Department</th>
+                    <th className="text-left p-2 font-medium">Month</th>
+                    <th className="text-left p-2 font-medium">Revenue (₹)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.length === 0 ? (
+                    <tr>
+                      <td colSpan={3} className="text-center text-gray-500 p-4">
+                        No recent data
+                      </td>
+                    </tr>
+                  ) : (
+                    data
+                      .slice(-10)
+                      .reverse()
+                      .map((d, i) => {
+                        const [y, m] = d.date.split("-");
+                        return (
+                          <tr key={i} className="border-b hover:bg-gray-50">
+                            <td className="p-2">{d.dept}</td>
+                            <td className="p-2">
+                              {monthNames[parseInt(m, 10) - 1]} {y}
+                            </td>
+                            <td className="p-2">₹{d.selling.toLocaleString("en-IN")}</td>
+                          </tr>
+                        );
+                      })
+                  )}
+                </tbody>
+              </table>
+            </div>
           </CardContent>
         </Card>
       </div>
