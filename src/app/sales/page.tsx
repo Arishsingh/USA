@@ -80,7 +80,6 @@ export default function SalesPage() {
     setRows((prev) => {
       const newRows = [...prev]
       const numVal = field === "date" ? value : parseFloat(value) || 0
-      newRows[index][field] = numVal
       newRows[index].total = newRows[index].net + newRows[index].tax - newRows[index].discount
       return newRows
     })

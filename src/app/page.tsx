@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useEffect, useState } from "react";
 import {
@@ -22,7 +22,6 @@ import {
 
 export default function VrdhtechDashboard() {
   const [data, setData] = useState([]);
-  const [theme, setTheme] = useState("light");
 
   useEffect(() => {
     const storedData = JSON.parse(localStorage.getItem("deptData") || "[]");
@@ -30,16 +29,29 @@ export default function VrdhtechDashboard() {
   }, []);
 
   const monthlySalesMap = data.reduce((acc, d) => {
-    const [y, m] = d.date.split('-');
+    const [y, m] = d.date.split("-");
     const key = `${y}-${m}`;
     acc[key] = (acc[key] || 0) + d.selling;
     return acc;
   }, {});
 
-  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const monthNames = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
   const months = Object.keys(monthlySalesMap).sort();
-  const monthlySales = months.map(k => {
-    const [y, m] = k.split('-');
+  const monthlySales = months.map((k) => {
+    const [y, m] = k.split("-");
     return { name: `${monthNames[parseInt(m) - 1]} ${y}`, revenue: monthlySalesMap[k] };
   });
 
@@ -48,12 +60,19 @@ export default function VrdhtechDashboard() {
     return acc;
   }, {});
 
-  const departmentData = Object.keys(deptRevenueMap).map(name => ({ name, value: deptRevenueMap[name] }));
+  const departmentData = Object.keys(deptRevenueMap).map((name) => ({
+    name,
+    value: deptRevenueMap[name],
+  }));
 
   const target = 200000;
   const currentMonth = new Date().toISOString().slice(0, 7);
-  const currentRevenue = data.filter(d => d.date.startsWith(currentMonth)).reduce((sum, d) => sum + d.selling, 0);
-  const todaysSales = data.filter(d => new Date(d.date).toDateString() === new Date().toDateString()).reduce((sum, d) => sum + d.selling, 0);
+  const currentRevenue = data
+    .filter((d) => d.date.startsWith(currentMonth))
+    .reduce((sum, d) => sum + d.selling, 0);
+  const todaysSales = data
+    .filter((d) => new Date(d.date).toDateString() === new Date().toDateString())
+    .reduce((sum, d) => sum + d.selling, 0);
   const progress = Math.min(100, (currentRevenue / target) * 100);
 
   const COLORS = ["#ef4444", "#10b981", "#3b82f6", "#f59e0b", "#6366f1"];
@@ -69,9 +88,9 @@ export default function VrdhtechDashboard() {
             <div className="text-xl font-semibold text-blue-600">{progress.toFixed(1)}%</div>
           </div>
           <div className="mt-4 text-sm text-gray-600 text-center">
-            <div>Target: ₹{target.toLocaleString('en-IN')}</div>
-            <div>M. Revenue: ₹{currentRevenue.toLocaleString('en-IN')}</div>
-            <div>Today's Sales: ₹{todaysSales.toLocaleString('en-IN')}</div>
+            <div>Target: ₹{target.toLocaleString("en-IN")}</div>
+            <div>M. Revenue: ₹{currentRevenue.toLocaleString("en-IN")}</div>
+            <div>Today&apos;s Sales: ₹{todaysSales.toLocaleString("en-IN")}</div>
           </div>
         </CardContent>
       </Card>
@@ -100,7 +119,14 @@ export default function VrdhtechDashboard() {
           <CardContent className="h-72 flex items-center justify-center">
             <ResponsiveContainer width="100%" height={240}>
               <PieChart>
-                <Pie data={departmentData} dataKey="value" nameKey="name" innerRadius={50} outerRadius={80} paddingAngle={4}>
+                <Pie
+                  data={departmentData}
+                  dataKey="value"
+                  nameKey="name"
+                  innerRadius={50}
+                  outerRadius={80}
+                  paddingAngle={4}
+                >
                   {departmentData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
@@ -126,19 +152,26 @@ export default function VrdhtechDashboard() {
               <TableBody>
                 {data.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={3} className="text-center text-gray-500">No recent data</TableCell>
+                    <TableCell colSpan={3} className="text-center text-gray-500">
+                      No recent data
+                    </TableCell>
                   </TableRow>
                 ) : (
-                  data.slice(-10).reverse().map((d, i) => {
-                    const [y, m] = d.date.split('-');
-                    return (
-                      <TableRow key={i}>
-                        <TableCell>{d.dept}</TableCell>
-                        <TableCell>{monthNames[parseInt(m) - 1]} {y}</TableCell>
-                        <TableCell>₹{d.selling}</TableCell>
-                      </TableRow>
-                    );
-                  })
+                  data
+                    .slice(-10)
+                    .reverse()
+                    .map((d, i) => {
+                      const [y, m] = d.date.split("-");
+                      return (
+                        <TableRow key={i}>
+                          <TableCell>{d.dept}</TableCell>
+                          <TableCell>
+                            {monthNames[parseInt(m) - 1]} {y}
+                          </TableCell>
+                          <TableCell>₹{d.selling}</TableCell>
+                        </TableRow>
+                      );
+                    })
                 )}
               </TableBody>
             </Table>
