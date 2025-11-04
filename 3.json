@@ -1,0 +1,523 @@
+{
+  "name": "fetchIds",
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "const dataIn = $input.first().json.data;\nconst dataJson = JSON.parse(dataIn);\nconst totalBids = dataJson.response.response.numFound;\nconst totalPages = Math.ceil(totalBids / 10);\nconst thisPage = $('data holder').first().json.thisPage+1;\nconst bidIDs = $('data holder').first().json.bidIDs;\nconst docs = dataJson.response.response.docs;\nfor (const doc of docs) {\n  bidIDs.push(doc.id);\n}\nconst credentials = {\n  \"type\":$('Start').first().json.type_firstItem,\n  \"csrf\":$('Start').first().json.csrf_firstItem,\n  \"expires\":$('Start').first().json.expires_firstItem,\n  \"setCookies\":$('Start').first().json.setCookies_firstItem,\n};\nreturn [\n  {\n    json: {\n      totalPages,\n      thisPage,\n      bidIDs,\n      credentials ,\n      category:$('Start').first().json.categories_firstItem\n    },\n  },\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        944,
+        192
+      ],
+      "id": "d4fb1ba3-fcc2-4cc7-9ee2-bb1d463c7043",
+      "name": "page 2"
+    },
+    {
+      "parameters": {
+        "jsCode": "const dataIn = $input.first().json.data;\nconst dataJson = JSON.parse(dataIn);\nconst totalBids = dataJson.response.response.numFound;\nconst totalPages = Math.ceil(totalBids / 10);\nconst thisPage = 2;\nconst bidIDs = [];\nconst docs = dataJson.response.response.docs;\nfor (const doc of docs) {\n  bidIDs.push(doc.id);\n}\nconst credentials = {\n  \"type\":$('Start').first().json.type_firstItem,\n  \"csrf\":$('Start').first().json.csrf_firstItem,\n  \"expires\":$('Start').first().json.expires_firstItem,\n  \"setCookies\":$('Start').first().json.setCookies_firstItem,\n};\nreturn [\n  {\n    json: {\n      totalPages,\n      thisPage,\n      bidIDs,\n      credentials ,\n      category:$('Start').first().json.categories_firstItem\n    },\n  },\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        272,
+        272
+      ],
+      "id": "e78eef48-a91d-43a9-bd19-cce4d64846c2",
+      "name": "from page1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://bidplus.gem.gov.in/all-bids-data",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/x-www-form-urlencoded"
+            },
+            {
+              "name": "Accept",
+              "value": " application/json, text/javascript, */*; q=0.01"
+            },
+            {
+              "name": "X-Requested-With",
+              "value": "XMLHttpRequest"
+            },
+            {
+              "name": "Referer",
+              "value": "https://bidplus.gem.gov.in/all-bids"
+            },
+            {
+              "name": "Origin",
+              "value": "https://bidplus.gem.gov.in"
+            },
+            {
+              "name": "Host",
+              "value": "bidplus.gem.gov.in"
+            },
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+            },
+            {
+              "name": "Cookie",
+              "value": "={{ $json.setCookies_firstItem }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "payload",
+              "value": "={\"param\":{\"searchBid\":\"{{ $json.categories_firstItem }}\",\"searchType\":\"fullText\"},\"filter\":{\"bidStatusType\":\"ongoing_bids\",\"byType\":\"{{ $json.type_firstItem }}\",\"highBidValue\":\"\",\"byEndDate\":{\"from\":\"\",\"to\":\"\"},\"sort\":\"Bid-End-Date-Oldest\"}}"
+            },
+            {
+              "name": "csrf_bd_gem_nk",
+              "value": "={{ $json.csrf_firstItem }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        48,
+        272
+      ],
+      "id": "e97cc445-b6e8-4012-9727-ca7dbddfc450",
+      "name": "fetch page 1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://bidplus.gem.gov.in/all-bids-data",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/x-www-form-urlencoded"
+            },
+            {
+              "name": "Accept",
+              "value": " application/json, text/javascript, */*; q=0.01"
+            },
+            {
+              "name": "X-Requested-With",
+              "value": "XMLHttpRequest"
+            },
+            {
+              "name": "Referer",
+              "value": "https://bidplus.gem.gov.in/all-bids"
+            },
+            {
+              "name": "Origin",
+              "value": "https://bidplus.gem.gov.in"
+            },
+            {
+              "name": "Host",
+              "value": "bidplus.gem.gov.in"
+            },
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+            },
+            {
+              "name": "Cookie",
+              "value": "={{ $json.credentials.setCookies }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "payload",
+              "value": "={\"page\":{{ $json.thisPage }},\"param\":{\"searchBid\":\"{{ $json.category }}\",\"searchType\":\"fullText\"},\"filter\":{\"bidStatusType\":\"ongoing_bids\",\"byType\":\"{{ $json.credentials.type }}\",\"highBidValue\":\"\",\"byEndDate\":{\"from\":\"\",\"to\":\"\"},\"sort\":\"Bid-End-Date-Oldest\"}}"
+            },
+            {
+              "name": "csrf_bd_gem_nk",
+              "value": "={{ $json.credentials.csrf }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        720,
+        192
+      ],
+      "id": "69dc4851-0c38-44d2-9c82-4de4592cf67f",
+      "name": "fetch remaining page"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={{ $json }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        496,
+        272
+      ],
+      "id": "46650b57-12c8-4a0e-8cae-849e52986916",
+      "name": "data holder"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "04101510-f071-429c-8e64-24d6a5fd59e0",
+              "leftValue": "={{ $json.thisPage }}",
+              "rightValue": "={{ $json.totalPages}}",
+              "operator": {
+                "type": "number",
+                "operation": "lte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1168,
+        272
+      ],
+      "id": "133ea066-40b4-4478-8af6-3778eea38229",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "jsCode": "\n// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  item.json.myNewField = 1;\n}\n\nreturn [\n  { \"bidIds\": $input.first().json.bidIDs},\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1392,
+        272
+      ],
+      "id": "2ec476c7-1aef-426c-aab5-a4eb86048c6c",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "categories_firstItem",
+              "type": "any"
+            },
+            {
+              "name": "setCookies_firstItem",
+              "type": "any"
+            },
+            {
+              "name": "expires_firstItem",
+              "type": "any"
+            },
+            {
+              "name": "type_firstItem",
+              "type": "any"
+            },
+            {
+              "name": "csrf_firstItem",
+              "type": "any"
+            },
+            {
+              "name": "setCookies",
+              "type": "any"
+            },
+            {
+              "name": "categories",
+              "type": "any"
+            },
+            {
+              "name": "type",
+              "type": "any"
+            },
+            {
+              "name": "csrf",
+              "type": "any"
+            }
+          ]
+        }
+      },
+      "id": "40bbc580-88d8-4806-b535-586d55888dd1",
+      "typeVersion": 1.1,
+      "name": "Start",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        -176,
+        272
+      ]
+    }
+  ],
+  "pinData": {
+    "Start": [
+      {
+        "json": {
+          "type_firstItem": "all",
+          "csrf_firstItem": "abc8dd2bdbf94bc80f7aa6fab231c47d",
+          "expires_firstItem": "1760891084000",
+          "setCookies_firstItem": "csrf_gem_cookie=abc8dd2bdbf94bc80f7aa6fab231c47d; ci_session=4e139872ce04a92a3f1800526e48ebbca8c45b8c; GeM=1542078820.20480.0000; TS0174a79d=01e393167d46a901165fb95ee326294206f83f0efc7b00241baf87760d775873b53e7aa2e9bc2f5297753a2619b6cd70d86041e6843da48b3321dda547cf93abcb2536fffd233819069bd9c956108128e405fc0349d53883d17ded18f7024cef73b34af9e6; ",
+          "categories_firstItem": "car"
+        }
+      }
+    ],
+    "Code in JavaScript": [
+      {
+        "json": {
+          "bidIds": [
+            "8468425",
+            "8367676",
+            "8485088",
+            "8396457",
+            "8231170",
+            "8452919",
+            "8449506",
+            "8397868",
+            "8490877",
+            "8410620",
+            "8485162",
+            "8490784",
+            "8380359",
+            "8448880",
+            "8406755",
+            "8454014",
+            "8485560",
+            "8474847",
+            "8422720",
+            "8356136",
+            "8427898",
+            "8448532",
+            "8445656",
+            "8430312",
+            "8411861",
+            "8409147",
+            "8456466",
+            "8455530",
+            "8482498",
+            "8421639",
+            "8378053",
+            "8400719",
+            "8451865",
+            "8452535",
+            "8488292",
+            "8452818",
+            "8489265",
+            "8458605",
+            "8458906",
+            "8453614",
+            "8359785",
+            "8453979",
+            "8318058",
+            "8454075",
+            "8413151",
+            "8427425",
+            "8427259",
+            "8437130",
+            "8456632",
+            "8492606",
+            "8492590",
+            "8430273",
+            "8463114",
+            "8413719",
+            "8460208",
+            "8432877",
+            "8455714",
+            "8460695",
+            "8454635",
+            "8457293",
+            "8461965",
+            "8452360",
+            "8462356",
+            "8462347",
+            "8462520",
+            "8438360",
+            "8494078",
+            "8421685",
+            "8461398",
+            "8363525",
+            "8358592",
+            "8443220",
+            "8463638",
+            "8310099",
+            "8461016",
+            "8442685",
+            "8468457",
+            "8471154",
+            "8462201",
+            "8386421",
+            "8363527",
+            "8474163",
+            "8474141",
+            "8474440",
+            "8475596",
+            "8459507",
+            "8421482",
+            "8484333",
+            "8484279",
+            "8484421",
+            "8342864",
+            "8390240",
+            "8477605",
+            "8476166",
+            "8483961",
+            "8408901",
+            "8493182",
+            "8443366",
+            "8399522",
+            "8493752",
+            "8493897",
+            "8492268",
+            "8494220",
+            "8494207",
+            "8493550",
+            "8494160",
+            "8440916",
+            "8490382",
+            "8455879",
+            "8415661",
+            "8492550",
+            "8355640",
+            "8382114",
+            "8491956",
+            "8429135",
+            "8468376",
+            "8483696",
+            "8482877",
+            "8491189",
+            "8485574"
+          ]
+        }
+      }
+    ]
+  },
+  "connections": {
+    "page 2": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "from page1": {
+      "main": [
+        [
+          {
+            "node": "data holder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "fetch page 1": {
+      "main": [
+        [
+          {
+            "node": "from page1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "fetch remaining page": {
+      "main": [
+        [
+          {
+            "node": "page 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "data holder": {
+      "main": [
+        [
+          {
+            "node": "fetch remaining page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "data holder",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        []
+      ]
+    },
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "fetch page 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f1756d2d-3faa-471f-be96-55f56e7f1a6b",
+  "meta": {
+    "instanceId": "35e9c8b2201ab8b7f3d5f8962c9a6873ec0dbc52b3d636dca71e85b9c07be20b"
+  },
+  "id": "0jgd6HsXFNXGZ4K6",
+  "tags": []
+}

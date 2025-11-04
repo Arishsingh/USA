@@ -1,0 +1,86 @@
+{
+  "name": "fetch-csrf",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "id": "84b2a898-c0f1-4fd4-af1d-f82e9339cb7c",
+      "typeVersion": 1.1,
+      "name": "Start",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        -272,
+        96
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://bidplus.gem.gov.in/all-bids",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -64,
+        96
+      ],
+      "id": "b2fdfcbb-8b02-4bbb-883e-1715eae00f7e",
+      "name": "Call for csrf"
+    },
+    {
+      "parameters": {
+        "jsCode": "const headers = $input.first().json.headers;\nconst Cookies = headers['set-cookie'];\nconst csrf = Cookies[0].split(\"; \")[0].split('=')[1];\nconst expiresDate = new Date(Cookies[0].split(\"; \")[1].split('=')[1]);\nconst expires = expiresDate.getTime();\nconst s = Cookies[0].split(\"; \")[0]+\"; \"+Cookies[1].split(\"; \")[0]+\"; \"+Cookies[2].split(\"; \")[0]+\"; \"+Cookies[3].split(\"; \")[0]+\"; \"\nconst setCookies= s;\n\nreturn [\n  {\n    json: {\n      csrf,\n      expires,\n      setCookies\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        176,
+        96
+      ],
+      "id": "c6de81f5-dbc1-4742-98d5-237770a7c531",
+      "name": "Extract Set-Cookie Headers"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Call for csrf",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call for csrf": {
+      "main": [
+        [
+          {
+            "node": "Extract Set-Cookie Headers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "2b977d98-b465-4f23-8b93-1096c5be31cf",
+  "meta": {
+    "instanceId": "35e9c8b2201ab8b7f3d5f8962c9a6873ec0dbc52b3d636dca71e85b9c07be20b"
+  },
+  "id": "TAMJoflEIZOtPfkz",
+  "tags": []
+}
