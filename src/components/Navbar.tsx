@@ -50,12 +50,7 @@ const Navbar = () => {
             >
               Light
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => setTheme("dark")}
-              className={currentTheme === "dark" ? "bg-accent" : ""}
-            >
-              Dark
-            </DropdownMenuItem>
+            
             <DropdownMenuItem
               onClick={() => setTheme("system")}
               className={theme === "system" ? "bg-accent" : ""}
