@@ -37,6 +37,8 @@ const items = [
   { title: " sales update", url: "/sales", icon: Calendar },
   { title: "Buying updates", url: "/balance", icon: Search },
   { title: "Analyze", url: "/analyze", icon: Settings },
+  { title: "Gas Dept page ", url: "/gasdept", icon: Inbox },
+
 ];
 
 const AppSidebar = () => {

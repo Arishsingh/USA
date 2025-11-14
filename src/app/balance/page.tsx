@@ -5,13 +5,13 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
+import { Trash2 } from "lucide-react" // ✅ Icon for delete button
 
 type Employee = { name: string; amount: number }
 type CardFee = { desc: string; amount: number }
 type Expense = { name: string; amount: number }
 
 export default function ExpensePage() {
-  // States with lazy init from localStorage or fallback empty
   const [employeeName, setEmployeeName] = useState("")
   const [employeeAmount, setEmployeeAmount] = useState("")
   const [employees, setEmployees] = useState<Employee[]>(() => {
@@ -44,7 +44,6 @@ export default function ExpensePage() {
 
   const [revenue, setRevenue] = useState("")
 
-  // Load total revenue from localStorage (from Sales Page)
   useEffect(() => {
     if (typeof window !== "undefined") {
       const savedRevenue = localStorage.getItem("totalRevenue")
@@ -52,23 +51,16 @@ export default function ExpensePage() {
     }
   }, [])
 
-  // Save to localStorage when data changes
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem("employees", JSON.stringify(employees))
-    }
+    localStorage.setItem("employees", JSON.stringify(employees))
   }, [employees])
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem("cardFees", JSON.stringify(cardFees))
-    }
+    localStorage.setItem("cardFees", JSON.stringify(cardFees))
   }, [cardFees])
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem("expenses", JSON.stringify(expenses))
-    }
+    localStorage.setItem("expenses", JSON.stringify(expenses))
   }, [expenses])
 
   // Totals
@@ -78,7 +70,7 @@ export default function ExpensePage() {
   const totalAllExpenses = totalPaychecks + totalCardFees + totalExpenses
   const finalAmount = (Number(revenue) || 0) - totalAllExpenses
 
-  // Add Handlers
+  // Add handlers
   const handleAddEmployee = () => {
     if (employeeName && employeeAmount) {
       setEmployees((prev) => [...prev, { name: employeeName, amount: Number(employeeAmount) }])
@@ -103,6 +95,19 @@ export default function ExpensePage() {
     }
   }
 
+  // Delete handlers ✅
+  const handleDeleteEmployee = (index: number) => {
+    setEmployees((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  const handleDeleteCardFee = (index: number) => {
+    setCardFees((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  const handleDeleteExpense = (index: number) => {
+    setExpenses((prev) => prev.filter((_, i) => i !== index))
+  }
+
   return (
     <div className="p-8 space-y-8">
       {/* Employee Paychecks */}
@@ -117,11 +122,7 @@ export default function ExpensePage() {
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="grid grid-cols-2 gap-4">
-            <Input
-              placeholder="Employee Name"
-              value={employeeName}
-              onChange={(e) => setEmployeeName(e.target.value)}
-            />
+            <Input placeholder="Employee Name" value={employeeName} onChange={(e) => setEmployeeName(e.target.value)} />
             <Input
               placeholder="Amount (₹)"
               type="number"
@@ -129,23 +130,32 @@ export default function ExpensePage() {
               onChange={(e) => setEmployeeAmount(e.target.value)}
             />
           </div>
+
           {employees.length > 0 && (
             <>
               <Separator />
               <div className="space-y-2">
                 {employees.map((emp, i) => (
-                  <div key={i} className="flex justify-between text-sm text-gray-700">
-                    <span>{emp.name}</span>
-                    <span>₹{emp.amount.toFixed(2)}</span>
+                  <div key={i} className="flex justify-between items-center text-sm text-gray-700">
+                    <div className="flex justify-between w-full">
+                      <span>{emp.name}</span>
+                      <span>₹{emp.amount.toFixed(2)}</span>
+                    </div>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="ml-2 text-red-500 hover:text-red-700"
+                      onClick={() => handleDeleteEmployee(i)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
                 ))}
               </div>
             </>
           )}
           <Separator />
-          <div className="text-right text-blue-600 font-medium">
-            Total Paychecks: ₹{totalPaychecks.toFixed(2)}
-          </div>
+          <div className="text-right text-blue-600 font-medium">Total Paychecks: ₹{totalPaychecks.toFixed(2)}</div>
         </CardContent>
       </Card>
 
@@ -161,11 +171,7 @@ export default function ExpensePage() {
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="grid grid-cols-2 gap-4">
-            <Input
-              placeholder="Card Fee Description"
-              value={cardDesc}
-              onChange={(e) => setCardDesc(e.target.value)}
-            />
+            <Input placeholder="Card Fee Description" value={cardDesc} onChange={(e) => setCardDesc(e.target.value)} />
             <Input
               placeholder="Amount (₹)"
               type="number"
@@ -173,23 +179,32 @@ export default function ExpensePage() {
               onChange={(e) => setCardAmount(e.target.value)}
             />
           </div>
+
           {cardFees.length > 0 && (
             <>
               <Separator />
               <div className="space-y-2">
                 {cardFees.map((fee, i) => (
-                  <div key={i} className="flex justify-between text-sm text-gray-700">
-                    <span>{fee.desc}</span>
-                    <span>₹{fee.amount.toFixed(2)}</span>
+                  <div key={i} className="flex justify-between items-center text-sm text-gray-700">
+                    <div className="flex justify-between w-full">
+                      <span>{fee.desc}</span>
+                      <span>₹{fee.amount.toFixed(2)}</span>
+                    </div>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="ml-2 text-red-500 hover:text-red-700"
+                      onClick={() => handleDeleteCardFee(i)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
                 ))}
               </div>
             </>
           )}
           <Separator />
-          <div className="text-right text-blue-600 font-medium">
-            Total Card Fees: ₹{totalCardFees.toFixed(2)}
-          </div>
+          <div className="text-right text-blue-600 font-medium">Total Card Fees: ₹{totalCardFees.toFixed(2)}</div>
         </CardContent>
       </Card>
 
@@ -205,11 +220,7 @@ export default function ExpensePage() {
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="grid grid-cols-2 gap-4">
-            <Input
-              placeholder="Expense Name"
-              value={expenseName}
-              onChange={(e) => setExpenseName(e.target.value)}
-            />
+            <Input placeholder="Expense Name" value={expenseName} onChange={(e) => setExpenseName(e.target.value)} />
             <Input
               placeholder="Amount (₹)"
               type="number"
@@ -217,32 +228,39 @@ export default function ExpensePage() {
               onChange={(e) => setExpenseAmount(e.target.value)}
             />
           </div>
+
           {expenses.length > 0 && (
             <>
               <Separator />
               <div className="space-y-2">
                 {expenses.map((exp, i) => (
-                  <div key={i} className="flex justify-between text-sm text-gray-700">
-                    <span>{exp.name}</span>
-                    <span>₹{exp.amount.toFixed(2)}</span>
+                  <div key={i} className="flex justify-between items-center text-sm text-gray-700">
+                    <div className="flex justify-between w-full">
+                      <span>{exp.name}</span>
+                      <span>₹{exp.amount.toFixed(2)}</span>
+                    </div>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="ml-2 text-red-500 hover:text-red-700"
+                      onClick={() => handleDeleteExpense(i)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
                 ))}
               </div>
             </>
           )}
           <Separator />
-          <div className="text-right text-blue-600 font-medium">
-            Total General Expenses: ₹{totalExpenses.toFixed(2)}
-          </div>
+          <div className="text-right text-blue-600 font-medium">Total General Expenses: ₹{totalExpenses.toFixed(2)}</div>
         </CardContent>
       </Card>
 
       {/* Final Summary */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg font-bold text-blue-600">
-            Final Calculation
-          </CardTitle>
+          <CardTitle className="text-lg font-bold text-blue-600">Final Calculation</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="flex items-center justify-between">
